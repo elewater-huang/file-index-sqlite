@@ -26,13 +26,40 @@ python scan_to_sqlite_v2.py --roots "\\example-server\Documents" --db team_index
 
 多個目錄可以接在 `--roots` 後面。同一資料庫固定使用相同根目錄與 profile；避免重疊根目錄。移除掃描目錄不會自動清除它的舊索引。
 
-大量共享目錄亦可由 `net view \\example-server` 輸出製作設定檔；只保留允許索引的 Disk 共用項目。將 `server_shares.example.txt` 複製為 `server_shares.txt`，填入自己的設定後：
+### 在 CMD 建立 server_shares.txt
+
+`server_shares.example.txt` 是虛構範例；實際設定檔可直接用 Windows 的 `net view` 指令產生，不必逐項手打。
+
+開啟 **命令提示字元（CMD，不是 PowerShell）**，切換到放置程式的資料夾。以下路徑與伺服器名稱請換成自己的：
+
+```bat
+cd /d "D:\Tools\file-index-sqlite"
+chcp 950
+net view \\YOUR-SERVER
+```
+
+先確認畫面正常列出共享目錄，再將相同結果輸出成檔案：
+
+```bat
+net view \\YOUR-SERVER > server_shares.txt
+notepad server_shares.txt
+```
+
+- `YOUR-SERVER` 是伺服器名稱；前面要保留兩個反斜線 `\\`。
+- `>` 將輸出寫到目前資料夾的 `server_shares.txt`；若檔案已存在會覆寫。請先備份自己調整過的設定。
+- `chcp 950` 配合繁體中文 Windows 的 CP950 輸出；程式也接受 UTF-8 設定檔。本步驟以繁體中文 Windows CMD 為例。
+- 記事本內應看到包含 `\\YOUR-SERVER` 的標頭與 `Disk` 共用項目。保留伺服器標頭，刪除不打算或未獲准索引的共用項目整行；不要改掉保留項目的名稱與 `Disk` 欄位。
+- 若顯示拒絕存取、找不到網路路徑或其他錯誤，先確認公司網路／VPN、伺服器名稱與既有權限，修正後重新產生檔案。錯誤訊息不能當作共享清單使用。
+
+完成設定後，執行：
 
 ```bat
 python scan_to_sqlite_v2.py --include-server --share-file server_shares.txt --db team_index.db
 ```
 
-範例伺服器與共享名稱皆為虛構。設定檔不應提交至公開 repository。
+`net view` 這一步只列出共享名稱；上述 Python 指令才會走訪保留項目下的檔案與資料夾。工具不會自動列出所有隱藏共用，也不會自動掃描其他伺服器。
+
+範例伺服器與共享名稱皆為虛構。實際 `server_shares.txt` 已列入 `.gitignore`，不應提交至公開 repository。
 
 ## 更新與搜尋
 
