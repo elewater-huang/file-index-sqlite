@@ -1,0 +1,4 @@
+Shared resources at \\example-server
+
+Documents                  Disk
+Team Files                 Disk

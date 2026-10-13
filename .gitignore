@@ -1,0 +1,8 @@
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+server_shares.txt
+__pycache__/
+*.pyc
+*.log
